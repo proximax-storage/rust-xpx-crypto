@@ -1,4 +1,4 @@
-<p align="center"><a href="https://www.rust-lang.org" target="_blank" rel="noopener noreferrer"><img width="150" src="https://user-images.githubusercontent.com/29048783/57234191-21b63680-6fee-11e9-92f1-3590472ec321.png" alt="Rust logo"></a></p>
+<p align="center"><a href="https://www.rust-lang.org" target="_blank" rel="noopener noreferrer"><img width="300" src="https://user-images.githubusercontent.com/29048783/72931755-72142680-3d2c-11ea-9e7a-252e995f1d0f.png" alt="Rust logo"></a></p>
 <h1 align="center">ProximaX Sirius Blockchain Crypto Rust</h1>
 
 Official ProximaX Sirius Blockchain implementation ed26619 encryption modules for Rust.
