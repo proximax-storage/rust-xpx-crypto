@@ -40,7 +40,7 @@
 //! # use xpx_crypto::Signature;
 //! # let mut csprng = thread_rng();
 //! # let keypair: Keypair = Keypair::generate(&mut csprng);
-//! let message: &[u8] = b"This is a test of the tsunami alert system.";
+//! let message: &[u8] = b"ProximaX Limited.";
 //! let signature: Signature = keypair.sign(message);
 //! # }
 //! ```
@@ -58,7 +58,7 @@
 //! # use xpx_crypto::Signature;
 //! # let mut csprng = thread_rng();
 //! # let keypair: Keypair = Keypair::generate(&mut csprng);
-//! # let message: &[u8] = b"This is a test of the tsunami alert system.";
+//! # let message: &[u8] = b"ProximaX Limited.";
 //! # let signature: Signature = keypair.sign(message);
 //! assert!(keypair.verify(message, &signature).is_ok());
 //! # }
@@ -78,7 +78,7 @@
 //! use xpx_crypto::PublicKey;
 //! # let mut csprng = thread_rng();
 //! # let keypair: Keypair = Keypair::generate(&mut csprng);
-//! # let message: &[u8] = b"This is a test of the tsunami alert system.";
+//! # let message: &[u8] = b"ProximaX Limited.";
 //! # let signature: Signature = keypair.sign(message);
 //!
 //! let public_key: PublicKey = keypair.public;
@@ -150,7 +150,7 @@
 //!
 //! If you prefer the bytes to be wrapped in another serialisation format, all
 //! types additionally come with built-in [serde](https://serde.rs) support by
-//! building `ed25519-dalek` via:
+//! building `rust-xpx-crypto` via:
 //!
 //! ```bash
 //! $ cargo build --features="serde"
