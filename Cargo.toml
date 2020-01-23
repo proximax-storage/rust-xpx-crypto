@@ -16,9 +16,6 @@ exclude = [ ".gitignore" ]
 name = "xpx_crypto"
 crate-type = ["lib"]
 
-#[badges]
-#travis-ci = { repository = "proximax-storage/rust-xpx-crypto", branch = "master"}
-
 [dependencies.curve25519-dalek]
 version = "1"
 default-features = false
