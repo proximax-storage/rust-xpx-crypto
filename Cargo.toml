@@ -1,12 +1,11 @@
 [package]
 name = "rust-xpx-crypto"
-version = "1.0.0-pre.1"
+version = "1.0.0-pre.2"
 authors = ["eleazar.garrido@proximax.io"]
 readme = "README.md"
 license = "Apache-2.0"
 repository = "https://github.com/proximax-storage/rust-xpx-crypto"
 homepage = "https://proximax.io"
-documentation = "https://github.com/proximax-storage/rust-xpx-crypto/wiki"
 keywords = ["cryptography", "ed25519", "curve25519", "signature"]
 categories = ["cryptography"]
 description = "Fast and efficient ed25519 EdDSA key generations, signing, and verification in pure Rust."
