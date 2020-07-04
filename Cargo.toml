@@ -1,18 +1,20 @@
 [package]
-name = "rust-xpx-crypto"
-version = "1.0.0-pre.2"
-authors = ["eleazar.garrido@proximax.io"]
+name = "xpx-chain-crypto"
+version = "1.0.3"
+authors = ["ProxymaX Core Development Team","Eleazar Garrido <eleazartovar123@gmail.com>"]
+edition = '2018'
 readme = "README.md"
 license = "Apache-2.0"
-repository = "https://github.com/proximax-storage/rust-xpx-crypto"
+repository = "https://github.com/proximax-storage/rust-xpx-chain-sdk/crypto"
 homepage = "https://proximax.io"
 keywords = ["cryptography", "ed25519", "curve25519", "signature"]
 categories = ["cryptography"]
 description = "Fast and efficient ed25519 EdDSA key generations, signing, and verification in pure Rust."
-exclude = [ ".gitignore" ]
+exclude = [ ".git" ]
+publish = false
 
 [lib]
-name = "xpx_crypto"
+name = "xpx_chain_crypto"
 crate-type = ["lib"]
 
 [dependencies.curve25519-dalek]
@@ -32,21 +34,21 @@ version = "^0.8"
 default-features = false
 
 [dependencies.failure]
-version = "^0.1.1"
+version = "^0.1"
 default-features = false
 
 [dependencies.clear_on_drop]
 version = "0.2"
 
 [dependencies.aes-soft]
-version = "^0.3.2"
+version = "^0.3"
 
 [dependencies.block-modes]
-version = "^0.3.2"
+version = "^0.3"
 
 [dev-dependencies]
-base32 = "0.4.0"
-ripemd160 = "0.8.0"
+base32 = "0.4"
+ripemd160 = "0.8"
 hex = "^0.3"
 bincode = "^0.9"
 criterion = "0.2"

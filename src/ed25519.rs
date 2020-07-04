@@ -1,9 +1,13 @@
+// Copyright 2018 ProximaX Limited. All rights reserved.
+// Use of this source code is governed by the Apache 2.0
+// license that can be found in the LICENSE file.
+
 //! ed25519 keypairs and batch verification.
 
-use core::default::Default;
-
-use rand::CryptoRng;
-use rand::Rng;
+use {
+    core::default::Default,
+    rand::{CryptoRng, Rng},
+};
 
 #[cfg(feature = "serde")]
 use serde::de::Error as SerdeError;
@@ -53,13 +57,13 @@ pub use crate::signature::*;
 /// # Examples
 ///
 /// ```
-/// extern crate xpx_crypto;
+/// extern crate xpx_chain_crypto;
 /// extern crate rand;
 ///
-/// use xpx_crypto::verify_batch;
-/// use xpx_crypto::Keypair;
-/// use xpx_crypto::PublicKey;
-/// use xpx_crypto::Signature;
+/// use xpx_chain_crypto::verify_batch;
+/// use xpx_chain_crypto::Keypair;
+/// use xpx_chain_crypto::PublicKey;
+/// use xpx_chain_crypto::Signature;
 /// use rand::thread_rng;
 /// use rand::rngs::ThreadRng;
 ///
@@ -81,12 +85,12 @@ pub fn verify_batch(
     messages: &[&[u8]],
     signatures: &[Signature],
     public_keys: &[PublicKey],
-) -> Result<(), SignatureError>
-{
-    const ASSERT_MESSAGE: &'static [u8] = b"The number of messages, signatures, and public keys must be equal.";
-    assert!(signatures.len()  == messages.len(),    ASSERT_MESSAGE);
-    assert!(signatures.len()  == public_keys.len(), ASSERT_MESSAGE);
-    assert!(public_keys.len() == messages.len(),    ASSERT_MESSAGE);
+) -> Result<(), SignatureError> {
+    const ASSERT_MESSAGE: &'static [u8] =
+        b"The number of messages, signatures, and public keys must be equal.";
+    assert!(signatures.len() == messages.len(), ASSERT_MESSAGE);
+    assert!(signatures.len() == public_keys.len(), ASSERT_MESSAGE);
+    assert!(public_keys.len() == messages.len(), ASSERT_MESSAGE);
 
     #[cfg(feature = "alloc")]
     use alloc::vec::Vec;
@@ -133,7 +137,8 @@ pub fn verify_batch(
     let id = EdwardsPoint::optional_multiscalar_mul(
         once(-B_coefficient).chain(zs.iter().cloned()).chain(zhrams),
         B.chain(Rs).chain(As),
-    ).ok_or_else(|| SignatureError(InternalError::VerifyError))?;
+    )
+    .ok_or_else(|| SignatureError(InternalError::VerifyError))?;
 
     if id.is_identity() {
         Ok(())
@@ -143,7 +148,7 @@ pub fn verify_batch(
 }
 
 /// An ed25519 keypair.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)] // we derive Default in order to use the clear() method in Drop
+#[derive(Default, Clone, Debug)] // we derive Default in order to use the clear() method in Drop
 pub struct Keypair {
     /// The secret half of this keypair.
     pub secret: SecretKey,
@@ -188,7 +193,7 @@ impl Keypair {
     ///
     /// A `Result` whose okay value is an EdDSA `Keypair` or whose error value
     /// is an `SignatureError` describing the error that occurred.
-    pub fn from_bytes<'a>(bytes: &'a [u8]) -> Result<Keypair, SignatureError> {
+    pub fn from_bytes(bytes: &[u8]) -> Result<Keypair, SignatureError> {
         if bytes.len() != KEYPAIR_LENGTH {
             return Err(SignatureError(InternalError::BytesLengthError {
                 name: "Keypair",
@@ -198,7 +203,35 @@ impl Keypair {
         let secret = SecretKey::from_bytes(&bytes[..SECRET_KEY_LENGTH])?;
         let public = PublicKey::from_bytes(&bytes[SECRET_KEY_LENGTH..])?;
 
-        Ok(Keypair{ secret: secret, public: public })
+        Ok(Keypair { secret, public })
+    }
+
+    /// Construct a `Keypair` from the bytes of a `PublicKey` and `SecretKey`.
+    ///
+    /// # Inputs
+    ///
+    /// * `bytes`: an `&[u8]` representing the scalar for the secret key, and a
+    ///   compressed Edwards-Y coordinate of a point on curve25519, both as bytes.
+    ///   (As obtained from `Keypair::to_bytes()`.)
+    ///
+    /// # Warning
+    ///
+    /// Absolutely no validation is done on the key.  If you give this function
+    /// bytes which do not represent a valid point, or which do not represent
+    /// corresponding parts of the key, then your `Keypair` will be broken and
+    /// it will be your fault.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` whose okay value is an EdDSA `Keypair` or whose error value
+    /// is an `SignatureError` describing the error that occurred.
+    pub fn from_private_key<'a>(private_key: SecretKey) -> Keypair {
+        let public = self::PublicKey::from(&private_key);
+
+        Keypair {
+            secret: private_key,
+            public,
+        }
     }
 
     /// Generate an ed25519 keypair.
@@ -207,15 +240,15 @@ impl Keypair {
     ///
     /// ```
     /// extern crate rand;
-    /// extern crate xpx_crypto;
+    /// extern crate xpx_chain_crypto;
     ///
     /// # #[cfg(feature = "std")]
     /// # fn main() {
     ///
     /// use rand::Rng;
     /// use rand::rngs::OsRng;
-    /// use xpx_crypto::Keypair;
-    /// use xpx_crypto::Signature;
+    /// use xpx_chain_crypto::Keypair;
+    /// use xpx_chain_crypto::Signature;
     ///
     /// let mut csprng: OsRng = OsRng::new().unwrap();
     /// let keypair: Keypair = Keypair::generate(&mut csprng);
@@ -242,7 +275,10 @@ impl Keypair {
         let sk: SecretKey = SecretKey::generate(csprng);
         let pk: PublicKey = (&sk).into();
 
-        Keypair{ public: pk, secret: sk }
+        Keypair {
+            public: pk,
+            secret: sk,
+        }
     }
 
     /// Sign a message with this keypair's secret key.
@@ -271,13 +307,13 @@ impl Keypair {
     /// # Examples
     ///
     /// ```
-    /// extern crate xpx_crypto;
+    /// extern crate xpx_chain_crypto;
     /// extern crate rand;
     ///
-    /// use xpx_crypto::Digest;
-    /// use xpx_crypto::Keypair;
-    /// use xpx_crypto::Sha3_512;
-    /// use xpx_crypto::Signature;
+    /// use xpx_chain_crypto::Digest;
+    /// use xpx_chain_crypto::Keypair;
+    /// use xpx_chain_crypto::Sha3_512;
+    /// use xpx_chain_crypto::Signature;
     /// use rand::thread_rng;
     ///
     /// # #[cfg(feature = "std")]
@@ -318,13 +354,13 @@ impl Keypair {
     /// your own!):
     ///
     /// ```
-    /// # extern crate xpx_crypto;
+    /// # extern crate xpx_chain_crypto;
     /// # extern crate rand;
     /// #
-    /// # use xpx_crypto::Digest;
-    /// # use xpx_crypto::Keypair;
-    /// # use xpx_crypto::Signature;
-    /// # use xpx_crypto::Sha3_512;
+    /// # use xpx_chain_crypto::Digest;
+    /// # use xpx_chain_crypto::Keypair;
+    /// # use xpx_chain_crypto::Signature;
+    /// # use xpx_chain_crypto::Sha3_512;
     /// # use rand::thread_rng;
     /// #
     /// # #[cfg(feature = "std")]
@@ -360,12 +396,7 @@ impl Keypair {
     }
 
     /// Verify a signature on a message with this keypair's public key.
-    pub fn verify(
-        &self,
-        message: &[u8],
-        signature: &Signature
-    ) -> Result<(), SignatureError>
-    {
+    pub fn verify(&self, message: &[u8], signature: &Signature) -> Result<(), SignatureError> {
         self.public.verify(message, signature)
     }
 
@@ -389,13 +420,13 @@ impl Keypair {
     /// # Examples
     ///
     /// ```
-    /// extern crate xpx_crypto;
+    /// extern crate xpx_chain_crypto;
     /// extern crate rand;
     ///
-    /// use xpx_crypto::Digest;
-    /// use xpx_crypto::Keypair;
-    /// use xpx_crypto::Signature;
-    /// use xpx_crypto::Sha3_512;
+    /// use xpx_chain_crypto::Digest;
+    /// use xpx_chain_crypto::Keypair;
+    /// use xpx_chain_crypto::Signature;
+    /// use xpx_chain_crypto::Sha3_512;
     /// use rand::thread_rng;
     ///
     /// # #[cfg(feature = "std")]
@@ -434,7 +465,8 @@ impl Keypair {
     where
         D: Digest<OutputSize = U64>,
     {
-        self.public.verify_prehashed(prehashed_message, context, signature)
+        self.public
+            .verify_prehashed(prehashed_message, context, signature)
     }
 }
 
@@ -460,9 +492,11 @@ impl<'d> Deserialize<'d> for Keypair {
             type Value = Keypair;
 
             fn expecting(&self, formatter: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                formatter.write_str("An ed25519 keypair, 64 bytes in total where the secret key is \
+                formatter.write_str(
+                    "An ed25519 keypair, 64 bytes in total where the secret key is \
                                      the first 32 bytes and is in unexpanded form, and the second \
-                                     32 bytes is a compressed point for a public key.")
+                                     32 bytes is a compressed point for a public key.",
+                )
             }
 
             fn visit_bytes<E>(self, bytes: &[u8]) -> Result<Keypair, E>
@@ -473,7 +507,10 @@ impl<'d> Deserialize<'d> for Keypair {
                 let public_key = PublicKey::from_bytes(&bytes[SECRET_KEY_LENGTH..]);
 
                 if secret_key.is_ok() && public_key.is_ok() {
-                    Ok(Keypair{ secret: secret_key.unwrap(), public: public_key.unwrap() })
+                    Ok(Keypair {
+                        secret: secret_key.unwrap(),
+                        public: public_key.unwrap(),
+                    })
                 } else {
                     Err(SerdeError::invalid_length(bytes.len(), &self))
                 }
