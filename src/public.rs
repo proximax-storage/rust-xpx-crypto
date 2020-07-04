@@ -1,10 +1,16 @@
+// Copyright 2018 ProximaX Limited. All rights reserved.
+// Use of this source code is governed by the Apache 2.0
+// license that can be found in the LICENSE file.
+
 //! ed25519 public keys.
 
 use core::fmt::Debug;
 
-use curve25519_dalek::constants;
-use curve25519_dalek::digest::generic_array::typenum::U64;
-use curve25519_dalek::digest::Digest;
+use curve25519_dalek::{
+    constants,
+    digest::{generic_array::typenum::U64, Digest},
+};
+
 use curve25519_dalek::edwards::CompressedEdwardsY;
 use curve25519_dalek::edwards::EdwardsPoint;
 use curve25519_dalek::scalar::Scalar;
@@ -76,7 +82,7 @@ impl PublicKey {
 
     /// View this public key as a byte array.
     #[inline]
-    pub fn as_bytes<'a>(&'a self) -> &'a [u8; PUBLIC_KEY_LENGTH] {
+    pub fn as_bytes(&self) -> &[u8; PUBLIC_KEY_LENGTH] {
         &(self.0).0
     }
 
@@ -91,11 +97,11 @@ impl PublicKey {
     /// # Example
     ///
     /// ```
-    /// # extern crate xpx_crypto;
+    /// # extern crate xpx_chain_crypto;
     /// #
-    /// use xpx_crypto::PublicKey;
-    /// use xpx_crypto::PUBLIC_KEY_LENGTH;
-    /// use xpx_crypto::SignatureError;
+    /// use xpx_chain_crypto::PublicKey;
+    /// use xpx_chain_crypto::PUBLIC_KEY_LENGTH;
+    /// use xpx_chain_crypto::SignatureError;
     ///
     /// # fn doctest() -> Result<PublicKey, SignatureError> {
     /// let public_key_bytes: [u8; PUBLIC_KEY_LENGTH] = [
@@ -157,12 +163,7 @@ impl PublicKey {
     ///
     /// Returns `Ok(())` if the signature is valid, and `Err` otherwise.
     #[allow(non_snake_case)]
-    pub fn verify(
-        &self,
-        message: &[u8],
-        signature: &Signature
-    ) -> Result<(), SignatureError>
-    {
+    pub fn verify(&self, message: &[u8], signature: &Signature) -> Result<(), SignatureError> {
         let mut h: Sha3_512 = Sha3_512::new();
         let R: EdwardsPoint;
         let k: Scalar;
@@ -215,7 +216,10 @@ impl PublicKey {
         let k: Scalar;
 
         let ctx: &[u8] = context.unwrap_or(b"");
-        debug_assert!(ctx.len() <= 255, "The context must not be longer than 255 octets.");
+        debug_assert!(
+            ctx.len() <= 255,
+            "The context must not be longer than 255 octets."
+        );
 
         let minus_A: EdwardsPoint = -self.1;
 

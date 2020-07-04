@@ -1,3 +1,7 @@
+// Copyright 2018 ProximaX Limited. All rights reserved.
+// Use of this source code is governed by the Apache 2.0
+// license that can be found in the LICENSE file.
+
 //! An ed25519 signature.
 
 use core::fmt::Debug;
@@ -71,11 +75,6 @@ impl Signature {
         signature_bytes[..32].copy_from_slice(&self.R.as_bytes()[..]);
         signature_bytes[32..].copy_from_slice(&self.s.as_bytes()[..]);
         signature_bytes
-    }
-
-    /// Construct a `Signature` from a slice of bytes.
-    pub fn plomo(&self){
-        println!("HOLA BB")
     }
 
     /// Construct a `Signature` from a slice of bytes.
