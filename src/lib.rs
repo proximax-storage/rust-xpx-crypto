@@ -24,7 +24,7 @@
 //! use xpx_chain_crypto::Keypair;
 //! use xpx_chain_crypto::Signature;
 //!
-//! let mut csprng: OsRng = OsRng::new().unwrap();
+//! let mut csprng = OsRng{};
 //! let keypair: Keypair = Keypair::generate(&mut csprng);
 //! # }
 //! #

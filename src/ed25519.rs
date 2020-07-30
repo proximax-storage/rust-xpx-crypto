@@ -32,6 +32,7 @@ pub use crate::errors::*;
 pub use crate::public::*;
 pub use crate::secret::*;
 pub use crate::signature::*;
+use rand::RngCore;
 
 /// Verify a batch of `signatures` on `messages` with their respective `public_keys`.
 ///
@@ -250,7 +251,7 @@ impl Keypair {
     /// use xpx_chain_crypto::Keypair;
     /// use xpx_chain_crypto::Signature;
     ///
-    /// let mut csprng: OsRng = OsRng::new().unwrap();
+    /// let mut csprng = OsRng{};
     /// let keypair: Keypair = Keypair::generate(&mut csprng);
     ///
     /// # }
@@ -270,7 +271,7 @@ impl Keypair {
     /// Other suitable hash functions include Keccak-512 and Blake2b-512.
     pub fn generate<R>(csprng: &mut R) -> Keypair
     where
-        R: CryptoRng + Rng,
+        R: CryptoRng + RngCore,
     {
         let sk: SecretKey = SecretKey::generate(csprng);
         let pk: PublicKey = (&sk).into();

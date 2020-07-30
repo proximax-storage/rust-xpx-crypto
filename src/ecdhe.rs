@@ -10,6 +10,7 @@ use {
 };
 
 use crate::aes::Aes256;
+use rand::Rng;
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
@@ -23,7 +24,7 @@ impl Ecdhe {
     pub fn from(g: [u8; 32]) -> Ecdhe {
         Ecdhe {
             g,
-            csprng: OsRng::new().unwrap(),
+            csprng: OsRng{},
         }
     }
 

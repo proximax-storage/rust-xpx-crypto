@@ -136,7 +136,7 @@ impl SecretKey {
     /// use xpx_chain_crypto::SecretKey;
     /// use xpx_chain_crypto::Signature;
     ///
-    /// let mut csprng: OsRng = OsRng::new().unwrap();
+    /// let mut csprng = OsRng{};
     /// let secret_key: SecretKey = SecretKey::generate(&mut csprng);
     /// # }
     /// #
@@ -332,7 +332,7 @@ impl ExpandedSecretKey {
     /// use sha3::Sha3_512;
     /// use xpx_chain_crypto::{SecretKey, ExpandedSecretKey};
     ///
-    /// let mut csprng: OsRng = OsRng::new().unwrap();
+    /// let mut csprng = OsRng{};
     /// let secret_key: SecretKey = SecretKey::generate(&mut csprng);
     /// let expanded_secret_key: ExpandedSecretKey = ExpandedSecretKey::from(&secret_key);
     /// let expanded_secret_key_bytes: [u8; 64] = expanded_secret_key.to_bytes();
@@ -376,7 +376,7 @@ impl ExpandedSecretKey {
     /// use xpx_chain_crypto::{SecretKey, ExpandedSecretKey};
     /// use xpx_chain_crypto::SignatureError;
     ///
-    /// let mut csprng: OsRng = OsRng::new().unwrap();
+    /// let mut csprng = OsRng{};
     /// let secret_key: SecretKey = SecretKey::generate(&mut csprng);
     /// let expanded_secret_key: ExpandedSecretKey = ExpandedSecretKey::from(&secret_key);
     /// let bytes: [u8; 64] = expanded_secret_key.to_bytes();
