@@ -1,6 +1,6 @@
 [package]
 name = "xpx-chain-crypto"
-version = "1.0.3"
+version = "1.0.4"
 authors = ["ProxymaX Core Development Team","Eleazar Garrido <eleazartovar123@gmail.com>"]
 edition = '2018'
 readme = "README.md"
@@ -22,8 +22,9 @@ version = "1"
 default-features = false
 
 [dependencies.rand]
-version = "0.6"
-features = ["i128_support"]
+version = "0.7"
+default-features = false
+optional = true
 
 [dependencies.serde]
 version = "^1.0"
