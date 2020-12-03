@@ -3,7 +3,7 @@ use rand::RngCore;
 
 use crate::{ExpandedSecretKey, PublicKey, SecretKey, IV_SIZE, KEY_SIZE};
 use curve25519_dalek::edwards::EdwardsPoint;
-use hex::{decode, encode};
+use hex::{decode};
 
 use crate::aes::Aes256;
 use ::std::{
@@ -26,9 +26,9 @@ pub struct Ed25519BlockCipher {
 }
 
 impl Ed25519BlockCipher {
-    pub fn new(secret_key: SecretKey) -> Self {
+    pub fn new(secret_key: &SecretKey) -> Self {
         Ed25519BlockCipher {
-            secret_key,
+            secret_key: secret_key.clone(),
             random: OsRng::default(),
         }
     }
@@ -42,7 +42,7 @@ impl Ed25519BlockCipher {
         r
     }
 
-    pub fn encrypt(&mut self, msg: &[u8], public: PublicKey) -> Vec<u8> {
+    pub fn encrypt(&mut self, msg: &[u8], public: &PublicKey) -> Vec<u8> {
         let mut salt = [0u8; KEY_SIZE];
         self.random.fill_bytes(&mut salt);
         let key = self.derive_shared_key(&salt, public);
@@ -59,7 +59,7 @@ impl Ed25519BlockCipher {
         output
     }
 
-    pub fn decrypt(&mut self, enc_msg: &[u8], public: PublicKey) -> Result<Vec<u8>, String> {
+    pub fn decrypt(&mut self, enc_msg: &[u8], public: &PublicKey) -> Result<Vec<u8>, String> {
         if enc_msg.len() < 48 {
             return Err(String::from("Too short encrypt message"));
         }
@@ -76,7 +76,7 @@ impl Ed25519BlockCipher {
         }
     }
 
-    fn derive_shared_key(&mut self, salt: &[u8], public: PublicKey) -> Vec<u8> {
+    fn derive_shared_key(&mut self, salt: &[u8], public: &PublicKey) -> Vec<u8> {
         let shared_secret = self.derive_shared_secret(public);
         let sb = self.xor_with_g(salt, &shared_secret);
         let shared_secret = Sha3_256::digest(&sb);
@@ -84,7 +84,7 @@ impl Ed25519BlockCipher {
         shared_secret.to_vec()
     }
 
-    fn derive_shared_secret(&mut self, public: PublicKey) -> [u8; KEY_SIZE] {
+    fn derive_shared_secret(&mut self, public: &PublicKey) -> [u8; KEY_SIZE] {
         let d: ExpandedSecretKey = ExpandedSecretKey::from(&self.secret_key);
 
         let minus_a = public.1;
@@ -115,15 +115,15 @@ mod test {
         let msg = "eleazar.garrido@proximax.io".as_bytes();
 
         let sender_public_key: PublicKey = (&sender_secret_key).into();
-        let mut block = Ed25519BlockCipher::new(sender_secret_key);
+        let mut block = Ed25519BlockCipher::new(&sender_secret_key);
 
 
         let public_key: PublicKey = (&recipient_secret_key).into();
-        let block_msg = block.encrypt(msg, public_key);
+        let block_msg = block.encrypt(msg, &public_key);
 
-        let mut block = Ed25519BlockCipher::new(recipient_secret_key);
+        let mut block = Ed25519BlockCipher::new(&recipient_secret_key);
 
-        let block_msg = block.decrypt(&block_msg, sender_public_key);
+        let block_msg = block.decrypt(&block_msg, &sender_public_key);
 
         assert_eq!(msg.to_vec(), block_msg.unwrap());
     }
