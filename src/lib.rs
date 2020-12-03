@@ -241,6 +241,8 @@
 #[macro_use]
 extern crate std;
 
+extern crate aes_soft as aes;
+extern crate block_modes;
 extern crate clear_on_drop;
 extern crate curve25519_dalek;
 extern crate failure;
@@ -248,11 +250,9 @@ extern crate rand;
 #[cfg(feature = "serde")]
 extern crate serde;
 extern crate sha3;
-extern crate aes_soft as aes;
-extern crate block_modes;
 
+mod block_cipher;
 mod constants;
-mod ecdhe;
 mod ed25519;
 mod errors;
 mod public;
