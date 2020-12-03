@@ -20,7 +20,7 @@ type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 /**
  * Implementation of the block cipher for Ed25519.
  */
-struct Ed25519BlockCipher {
+pub struct Ed25519BlockCipher {
     secret_key: SecretKey,
     random: OsRng,
 }
@@ -99,7 +99,6 @@ impl Ed25519BlockCipher {
 #[cfg(test)]
 mod test {
     use super::*;
-    use failure::_core::str::from_utf8;
 
     #[test]
     fn keypair_clear_on_drop() {
@@ -113,20 +112,19 @@ mod test {
         )
         .unwrap();
 
-        let sender_public_key: PublicKey = (&sender_secret_key).into();
+        let msg = "eleazar.garrido@proximax.io".as_bytes();
 
+        let sender_public_key: PublicKey = (&sender_secret_key).into();
         let mut block = Ed25519BlockCipher::new(sender_secret_key);
 
-        let msg = "eleazar.garrido@proximax.io".as_bytes();
 
         let public_key: PublicKey = (&recipient_secret_key).into();
         let block_msg = block.encrypt(msg, public_key);
-        println!("two: {:?}", encode(&block_msg));
 
         let mut block = Ed25519BlockCipher::new(recipient_secret_key);
 
         let block_msg = block.decrypt(&block_msg, sender_public_key);
 
-        println!("two: {:?}", from_utf8(&block_msg.unwrap()));
+        assert_eq!(msg.to_vec(), block_msg.unwrap());
     }
 }
