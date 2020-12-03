@@ -3,7 +3,7 @@ use rand::RngCore;
 
 use crate::{ExpandedSecretKey, PublicKey, SecretKey, IV_SIZE, KEY_SIZE};
 use curve25519_dalek::edwards::EdwardsPoint;
-use hex::{decode, encode};
+use hex::{decode};
 
 use crate::aes::Aes256;
 use ::std::{
@@ -99,7 +99,6 @@ impl Ed25519BlockCipher {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::Keypair;
 
     #[test]
     fn keypair_clear_on_drop() {
@@ -112,10 +111,6 @@ mod test {
             &decode("69441d693502557fa37b3d030bf997425d8bd60e3d42f8a404aa14798ae97bea").unwrap(),
         )
         .unwrap();
-
-        let secret_key = SecretKey::from_bytes(&decode("69441d693502557fa37b3d030bf997425d8bd60e3d42f8a404aa14798ae97bea").unwrap()).unwrap();
-
-        let key_pair = Keypair::from_private_key(secret_key);
 
         let msg = "eleazar.garrido@proximax.io".as_bytes();
 
