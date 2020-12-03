@@ -32,6 +32,8 @@ pub use crate::errors::*;
 pub use crate::public::*;
 pub use crate::secret::*;
 pub use crate::signature::*;
+pub use crate::block_cipher::*;
+
 use rand::RngCore;
 
 /// Verify a batch of `signatures` on `messages` with their respective `public_keys`.
