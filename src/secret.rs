@@ -11,7 +11,7 @@ use clear_on_drop::clear::Clear;
 use curve25519_dalek::constants;
 use curve25519_dalek::digest::generic_array::typenum::U64;
 use curve25519_dalek::digest::Digest;
-use curve25519_dalek::edwards::{CompressedEdwardsY,EdwardsPoint};
+use curve25519_dalek::edwards::CompressedEdwardsY;
 use curve25519_dalek::scalar::Scalar;
 
 use rand::CryptoRng;
@@ -32,7 +32,6 @@ use crate::constants::*;
 use crate::errors::*;
 use crate::public::*;
 use crate::signature::*;
-use crate::ecdhe::Ecdhe;
 
 /// An EdDSA secret key.
 #[derive(Default, Clone)] // we derive Default in order to use the clear() method in Drop
@@ -198,7 +197,7 @@ impl<'d> Deserialize<'d> for SecretKey {
     {
         struct SecretKeyVisitor;
 
-        impl<'d> Visitor <'d> for SecretKeyVisitor {
+        impl<'d> Visitor<'d> for SecretKeyVisitor {
             type Value = SecretKey;
 
             fn expecting(&self, formatter: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
@@ -289,7 +288,7 @@ impl<'a> From<&'a SecretKey> for ExpandedSecretKey {
     /// ```
     fn from(secret_key: &'a SecretKey) -> ExpandedSecretKey {
         let mut h: Sha3_512 = Sha3_512::default();
-        let mut hash:  [u8; 64] = [0u8; 64];
+        let mut hash: [u8; 64] = [0u8; 64];
         let mut lower: [u8; 32] = [0u8; 32];
         let mut upper: [u8; 32] = [0u8; 32];
 
@@ -300,11 +299,14 @@ impl<'a> From<&'a SecretKey> for ExpandedSecretKey {
         lower.copy_from_slice(&hash[00..32]);
         upper.copy_from_slice(&hash[32..64]);
 
-        lower[0]  &= 248;
-        lower[31] &=  127;
-        lower[31] |=  64;
+        lower[0] &= 248;
+        lower[31] &= 127;
+        lower[31] |= 64;
 
-        ExpandedSecretKey{ key: Scalar::from_bits(lower), nonce: upper, }
+        ExpandedSecretKey {
+            key: Scalar::from_bits(lower),
+            nonce: upper,
+        }
     }
 }
 
@@ -477,7 +479,10 @@ impl ExpandedSecretKey {
 
         let ctx: &[u8] = context.unwrap_or(b""); // By default, the context is an empty string.
 
-        debug_assert!(ctx.len() <= 255, "The context must not be longer than 255 octets.");
+        debug_assert!(
+            ctx.len() <= 255,
+            "The context must not be longer than 255 octets."
+        );
 
         let ctx_len: u8 = ctx.len() as u8;
 
@@ -520,19 +525,6 @@ impl ExpandedSecretKey {
         s = &(&k * &self.key) + &r;
 
         Signature { R, s }
-    }
-
-    #[allow(missing_docs)]
-    #[allow(non_snake_case)]
-    pub fn shared_key(&self, public_key: &PublicKey) -> Ecdhe {
-        let a = self.key;
-        let minus_A = public_key.1;
-        //assert_eq!(minus_A.compress(), public_key.0);
-        //assert_eq!(EdwardsPoint::default(), minus_A);
-
-        let A: EdwardsPoint = a * &(minus_A);
-        let g = A.compress().to_bytes();
-        Ecdhe::from(g)
     }
 }
 

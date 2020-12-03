@@ -4,6 +4,10 @@
 
 //! Common constants such as buffer sizes for keypairs and signatures.
 
+pub(crate) const IV_SIZE: usize = 16;
+
+pub(crate) const KEY_SIZE: usize = 32;
+
 /// The length of a ed25519 `Signature`, in bytes.
 pub const SIGNATURE_LENGTH: usize = 64;
 
