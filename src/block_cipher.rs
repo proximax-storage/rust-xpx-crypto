@@ -3,17 +3,16 @@ use rand::RngCore;
 
 use crate::{ExpandedSecretKey, PublicKey, SecretKey, IV_SIZE, KEY_SIZE};
 use curve25519_dalek::edwards::EdwardsPoint;
-use hex::{decode};
 
-use crate::aes::Aes256;
 use ::std::{
     string::{String, ToString},
     vec::Vec,
 };
+use aes::Aes256;
 use block_modes::block_padding::Pkcs7;
+
 use block_modes::{BlockMode, Cbc};
-use curve25519_dalek::digest::Digest;
-use sha3::Sha3_256;
+use sha3::{Digest, Sha3_256};
 
 type Aes256Cbc = Cbc<Aes256, Pkcs7>;
 
@@ -50,7 +49,7 @@ impl Ed25519BlockCipher {
         let mut iv = [0u8; IV_SIZE];
         self.random.fill_bytes(&mut iv);
 
-        let cipher = Aes256Cbc::new_var(&key, &iv).unwrap();
+        let cipher = Aes256Cbc::new_from_slices(&key, &iv).unwrap();
         let body = cipher.encrypt_vec(msg);
         let mut output = vec![];
         output.extend_from_slice(&salt);
@@ -69,7 +68,7 @@ impl Ed25519BlockCipher {
 
         let key = self.derive_shared_key(&salt, public);
 
-        let cipher = Aes256Cbc::new_var(&key, &iv).unwrap();
+        let cipher = Aes256Cbc::new_from_slices(&key, &iv).unwrap();
         match cipher.decrypt_vec(body) {
             Ok(msg) => Ok(msg),
             Err(err) => Err(err.to_string()),
@@ -98,6 +97,7 @@ impl Ed25519BlockCipher {
 
 #[cfg(test)]
 mod test {
+    use hex::decode;
     use super::*;
 
     #[test]
@@ -115,8 +115,8 @@ mod test {
         let msg = "eleazar.garrido@proximax.io".as_bytes();
 
         let sender_public_key: PublicKey = (&sender_secret_key).into();
+        println!("{:?}", sender_public_key.to_bytes());
         let mut block = Ed25519BlockCipher::new(&sender_secret_key);
-
 
         let public_key: PublicKey = (&recipient_secret_key).into();
         let block_msg = block.encrypt(msg, &public_key);

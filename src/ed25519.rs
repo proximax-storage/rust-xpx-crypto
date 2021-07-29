@@ -18,10 +18,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "serde")]
 use serde::{Deserializer, Serializer};
 
-pub use sha3::Sha3_512;
-
 use curve25519_dalek::digest::generic_array::typenum::U64;
-pub use curve25519_dalek::digest::Digest;
 
 use curve25519_dalek::constants;
 use curve25519_dalek::edwards::EdwardsPoint;
@@ -35,6 +32,7 @@ pub use crate::signature::*;
 pub use crate::block_cipher::*;
 
 use rand::RngCore;
+use sha3::{Digest, Sha3_512};
 
 /// Verify a batch of `signatures` on `messages` with their respective `public_keys`.
 ///
@@ -89,11 +87,11 @@ pub fn verify_batch(
     signatures: &[Signature],
     public_keys: &[PublicKey],
 ) -> Result<(), SignatureError> {
-    const ASSERT_MESSAGE: &'static [u8] =
-        b"The number of messages, signatures, and public keys must be equal.";
-    assert!(signatures.len() == messages.len(), ASSERT_MESSAGE);
-    assert!(signatures.len() == public_keys.len(), ASSERT_MESSAGE);
-    assert!(public_keys.len() == messages.len(), ASSERT_MESSAGE);
+    const ASSERT_MESSAGE: &'static str =
+        "The number of messages, signatures, and public keys must be equal.";
+    assert_eq!(signatures.len(), messages.len(), "{}", ASSERT_MESSAGE);
+    assert_eq!(signatures.len(), public_keys.len(), "{}", ASSERT_MESSAGE);
+    assert_eq!(public_keys.len(), messages.len(), "{}", ASSERT_MESSAGE);
 
     #[cfg(feature = "alloc")]
     use alloc::vec::Vec;
@@ -122,10 +120,10 @@ pub fn verify_batch(
 
     // Compute H(R || A || M) for each (signature, public_key, message) triplet
     let hrams = (0..signatures.len()).map(|i| {
-        let mut h: Sha3_512 = Sha3_512::default();
-        h.input(signatures[i].R.as_bytes());
-        h.input(public_keys[i].as_bytes());
-        h.input(&messages[i]);
+        let mut h: Sha3_512 = Sha3_512::new();
+        h.update(signatures[i].R.as_bytes());
+        h.update(public_keys[i].as_bytes());
+        h.update(&messages[i]);
         Scalar::from_hash(h)
     });
 

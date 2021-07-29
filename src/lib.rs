@@ -241,9 +241,9 @@
 #[macro_use]
 extern crate std;
 
-extern crate aes_soft as aes;
+extern crate aes;
 extern crate block_modes;
-extern crate clear_on_drop;
+// extern crate clear_on_drop;
 extern crate curve25519_dalek;
 extern crate failure;
 extern crate rand;

@@ -1,6 +1,6 @@
 [package]
 name = "xpx-chain-crypto"
-version = "1.0.5"
+version = "1.0.6"
 authors = ["ProxymaX Core Development Team","Eleazar Garrido <eleazartovar123@gmail.com>"]
 edition = '2018'
 readme = "README.md"
@@ -18,11 +18,12 @@ name = "xpx_chain_crypto"
 crate-type = ["lib"]
 
 [dependencies.curve25519-dalek]
-version = "1"
+version = "3.1.0"
 default-features = false
 
 [dependencies.rand]
-version = "0.7"
+version = "0.8"
+features = ["std_rng"]
 default-features = false
 optional = true
 
@@ -31,38 +32,28 @@ version = "^1.0"
 optional = true
 
 [dependencies.sha3]
-version = "^0.8"
+version = "^0.9"
 default-features = false
 
 [dependencies.failure]
 version = "^0.1"
 default-features = false
 
-[dependencies.clear_on_drop]
-version = "0.2"
-
-[dependencies.aes-soft]
-version = "^0.3"
+[dependencies.aes]
+version = "0.7.4"
 
 [dependencies.block-modes]
-version = "^0.3"
-
-[dependencies.hex]
-version = "^0.3"
+version = "^0.8.1"
 
 [dev-dependencies]
-base32 = "0.4"
-ripemd160 = "0.8"
-hex = "^0.3"
-bincode = "^0.9"
-criterion = "0.2"
+clear_on_drop = "0.2"
+hex = "^0.4.3"
 
 [features]
 default = ["std", "u64_backend"]
 std = ["curve25519-dalek/std", "rand/std", "sha3/std"]
 alloc = ["curve25519-dalek/alloc"]
-nightly = ["curve25519-dalek/nightly", "rand/nightly", "clear_on_drop/nightly"]
-yolocrypto = ["curve25519-dalek/yolocrypto"]
+nightly = ["curve25519-dalek/nightly", "rand/nightly"]
 u64_backend = ["curve25519-dalek/u64_backend"]
 u32_backend = ["curve25519-dalek/u32_backend"]
 avx2_backend = ["curve25519-dalek/avx2_backend"]
