@@ -235,7 +235,7 @@
 #![no_std]
 #![warn(future_incompatible)]
 #![warn(rust_2018_compatibility)]
-#![deny(missing_docs)] // refuse to compile if documentation is missing
+// #![deny(missing_docs)] // refuse to compile if documentation is missing
 
 #[cfg(any(feature = "std", test))]
 #[macro_use]
@@ -243,7 +243,7 @@ extern crate std;
 
 extern crate aes;
 extern crate block_modes;
-// extern crate clear_on_drop;
+extern crate clear_on_drop;
 extern crate curve25519_dalek;
 extern crate failure;
 extern crate rand;

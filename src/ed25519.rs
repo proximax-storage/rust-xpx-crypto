@@ -311,10 +311,9 @@ impl Keypair {
     /// extern crate xpx_chain_crypto;
     /// extern crate rand;
     ///
-    /// use xpx_chain_crypto::Digest;
     /// use xpx_chain_crypto::Keypair;
-    /// use xpx_chain_crypto::Sha3_512;
     /// use xpx_chain_crypto::Signature;
+    /// use sha3::{Sha3_512, Digest};
     /// use rand::thread_rng;
     ///
     /// # #[cfg(feature = "std")]
@@ -326,7 +325,7 @@ impl Keypair {
     /// // Create a hash digest object which we'll feed the message into:
     /// let mut prehashed: Sha3_512 = Sha3_512::new();
     ///
-    /// prehashed.input(message);
+    /// prehashed.update(message);
     /// # }
     /// #
     /// # #[cfg(not(feature = "std"))]
@@ -358,10 +357,9 @@ impl Keypair {
     /// # extern crate xpx_chain_crypto;
     /// # extern crate rand;
     /// #
-    /// # use xpx_chain_crypto::Digest;
     /// # use xpx_chain_crypto::Keypair;
     /// # use xpx_chain_crypto::Signature;
-    /// # use xpx_chain_crypto::Sha3_512;
+    /// # use sha3::{Sha3_512, Digest};
     /// # use rand::thread_rng;
     /// #
     /// # #[cfg(feature = "std")]
@@ -370,7 +368,7 @@ impl Keypair {
     /// # let keypair: Keypair = Keypair::generate(&mut csprng);
     /// # let message: &[u8] = b"All I want is to pet all of the dogs.";
     /// # let mut prehashed: Sha3_512 = Sha3_512::new();
-    /// # prehashed.input(message);
+    /// # prehashed.update(message);
     /// #
     /// let context: &[u8] = b"Ed25519DalekSignPrehashedDoctest";
     ///
@@ -424,11 +422,10 @@ impl Keypair {
     /// extern crate xpx_chain_crypto;
     /// extern crate rand;
     ///
-    /// use xpx_chain_crypto::Digest;
     /// use xpx_chain_crypto::Keypair;
     /// use xpx_chain_crypto::Signature;
-    /// use xpx_chain_crypto::Sha3_512;
     /// use rand::thread_rng;
+    /// use sha3::{Sha3_512, Digest};
     ///
     /// # #[cfg(feature = "std")]
     /// # fn main() {
@@ -437,7 +434,7 @@ impl Keypair {
     /// let message: &[u8] = b"All I want is to pet all of the dogs.";
     ///
     /// let mut prehashed: Sha3_512 = Sha3_512::default();
-    /// prehashed.input(message);
+    /// prehashed.update(message);
     ///
     /// let context: &[u8] = b"Ed25519DalekSignPrehashedDoctest";
     ///
@@ -445,7 +442,7 @@ impl Keypair {
     ///
     /// // The sha3::Sha3_512 struct doesn't implement Copy, so we'll have to create a new one:
     /// let mut prehashed_again: Sha3_512 = Sha3_512::default();
-    /// prehashed_again.input(message);
+    /// prehashed_again.update(message);
     ///
     /// let verified = keypair.public.verify_prehashed(prehashed_again, Some(context), &sig);
     ///
